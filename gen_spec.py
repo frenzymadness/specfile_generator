@@ -48,12 +48,12 @@ def generate_specfile(packagename):
     toml_data = get_pyproject_toml_metadata(packagename, version)
 
     python_build_requires = toml_data['build-system']['requires']
-    rpm_build_requires = toml_data['build-system']['requires-rpm']
+    fedora_build_requires = toml_data['build-system']['requires-fedora']
 
     result = template.render(pypi=pypi_data,
                              source_url=source_url,
                              python_build_requires=python_build_requires,
-                             rpm_build_requires=rpm_build_requires)
+                             fedora_build_requires=fedora_build_requires)
 
     with open('{}.spec'.format(packagename), 'w') as spec_file:
         spec_file.write(result)

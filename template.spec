@@ -13,7 +13,7 @@ Source0:        {{ source_url }}
 BuildRequires:  python3-devel
 
 # Non-Python deps
-{% for package in rpm_build_requires -%}
+{% for package in fedora_build_requires -%}
 BuildRequires:  {{ package }}
 {% endfor %}
 
