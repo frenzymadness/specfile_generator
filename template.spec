@@ -1,11 +1,11 @@
 %global pkgname {{ pypi['info']['name'] }}
 
-Name:           python-%{pkgname}
+Name:           python3-%{pkgname}
 Version:        {{ pypi['info']['version'] }}
 Release:        1%{?dist}
-Summary:        Python bindings for libgit2
+Summary:        Summary
 
-License:        GPLv2 with linking exception
+License:        License
 URL:            {{ pypi['info']['package_url'] }}
 Source0:        {{ source_url }}
 
@@ -19,42 +19,31 @@ BuildRequires:  {{ package }}
 
 # Python deps
 {% for package in python_build_requires -%}
-BuildRequires:  python3dist({{ package }})
+BuildRequires:  python3dist({{ package|lower }})
 {% endfor %}
 
-Requires:       python3-cffi
-Requires:       python3-six
+# Automatic runtime dependency generator
+%?python_enable_dependency_generator
 
 %description
-pygit2 is a set of Python bindings to the libgit2 library, which implements
-the core of Git.
-
+...
 
 %prep
-%autosetup -n %{pkgname}-%{version} -p1
-
-# Remove failing create_from tests
-# https://github.com/libgit2/pygit2/issues/748
-# rm test/test_patch.py
+%autosetup -n %{pkgname}-%{version}
 
 %build
 %py3_build
 
-
 %install
 %py3_install
 
-# Correct the permissions.
-find %{buildroot} -name '*.so' -exec chmod 755 {} ';'
-
-%{__python3} setup.py test
+# %check
+# %{__python3} setup.py test
 
 %files
-%doc README.rst TODO.txt
-%license COPYING
 %{python3_sitearch}/%{pkgname}-%{version}-py%{python3_version}.egg-info
 %{python3_sitearch}/%{pkgname}
-%{python3_sitearch}/_%{pkgname}.*.so
+%{python3_sitearch}/*.so
 
 %changelog
 * Tue Feb 27 2018 Lumír Balhar <lbalhar@redhat.com> - 0.26.3-1
