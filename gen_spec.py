@@ -2,8 +2,6 @@ import requests
 import sys
 
 from jinja2 import Template
-import mock
-import setuptools
 import toml
 
 
@@ -11,20 +9,6 @@ def get_pypi_metadata(packagename):
     URL = 'http://pypi.python.org/pypi/{}/json'.format(packagename)
     response = requests.get(URL)
     return response.json()
-
-
-# def get_setup_metadata(packagename, version):
-#     sys.path.insert(0, './{}-{}/'.format(packagename, version))
-
-#     with mock.patch.object(setuptools, 'setup') as mock_setup:
-#         import setup  # noqa
-
-#     args, kwargs = mock_setup.call_args
-#     extracted = {}
-#     for kwarg in 'license', 'install_requires':
-#         extracted[kwarg] = kwargs.get(kwarg, None)
-
-#     return extracted
 
 
 def get_pyproject_toml_metadata(packagename, version):
