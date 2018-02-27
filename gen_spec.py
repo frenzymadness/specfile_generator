@@ -12,7 +12,7 @@ def get_pypi_metadata(packagename):
 
 
 def get_pyproject_toml_metadata(packagename, version):
-    pyproject_file_name = '{}-{}/pyproject.toml'.format(packagename, version)
+    pyproject_file_name = 'pyproject_toml_files/{}.toml'.format(packagename)
     toml_data = toml.load(pyproject_file_name)
     return toml_data
 
