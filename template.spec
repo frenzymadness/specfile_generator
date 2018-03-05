@@ -43,7 +43,9 @@ BuildRequires:  python3dist({{ package|lower }})
 %files
 %{python3_sitearch}/%{pkgname}-%{version}-py%{python3_version}.egg-info
 %{python3_sitearch}/%{pkgname}
-%{python3_sitearch}/*.so
+{% for file in files %}
+{{ file }}
+{% endfor %}
 
 %changelog
 * Tue Feb 27 2018 Lumír Balhar <lbalhar@redhat.com> - 0.26.3-1
