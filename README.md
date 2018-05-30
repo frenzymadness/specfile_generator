@@ -1,6 +1,6 @@
 # specfile_generator
 
-Proof of concept of generator for RPM specfiles from (enhanced) pyproject.toml files. If this approach of rebuilding PyPI packages in RPM form will work, files in `pyproject_toml_files` may become a part of upstream projects or can be maintained as patches for upstream pyproject.toml files.
+Proof of concept of generator for RPM specfiles from (enhanced) [pyproject.toml files (PEP 518)](https://www.python.org/dev/peps/pep-0518/). If this approach of rebuilding PyPI packages in RPM form will work, files in `pyproject_toml_files` may become a part of upstream projects or can be maintained as patches for upstream pyproject.toml files.
 
 ## Dependencies
 
