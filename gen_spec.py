@@ -36,7 +36,7 @@ def filter_files(packagename, files):
 
 
 def get_pypi_metadata(packagename):
-    URL = 'http://pypi.python.org/pypi/{}/json'.format(packagename)
+    URL = 'https://pypi.python.org/pypi/{}/json'.format(packagename)
     response = requests.get(URL)
     return response.json()
 
