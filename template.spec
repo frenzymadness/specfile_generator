@@ -1,6 +1,5 @@
 %global pkgname {{ pypi['info']['name'] }}
 
-# todo: This is not valid specfile
 Name:           python-%{pkgname}
 Version:        {{ pypi['info']['version'] }}
 Release:        1%{?dist}
