@@ -5,7 +5,7 @@ Name:           python-%{pkgname}
 Version:        {{ pypi['info']['version'] }}
 Release:        1%{?dist}
 Summary:        {{ pypi['info']['summary']}}
-# todo: check if the license check with rpm list of licences
+# todo: check if the license match with rpm list of licences
 License:        {{ pypi['info']['license']}}
 URL:            {{ pypi['info']['Home-page'] }}
 Source0:        {{ (pypi['info']['download_url'] or source_url) }}
