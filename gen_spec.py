@@ -4,7 +4,6 @@ from tempfile import TemporaryDirectory
 from subprocess import call, check_output
 
 from jinja2 import Template
-import toml
 
 
 def get_installed_files(packagename):
@@ -41,12 +40,6 @@ def get_pypi_metadata(packagename):
     return response.json()
 
 
-def get_pyproject_toml_metadata(packagename, version):
-    pyproject_file_name = 'pyproject_toml_files/{}.toml'.format(packagename)
-    toml_data = toml.load(pyproject_file_name)
-    return toml_data
-
-
 def generate_specfile(packagename):
     with open('template.spec') as template_file:
         template = Template(template_file.read())
@@ -59,18 +52,11 @@ def generate_specfile(packagename):
             source_url = source['url']
             break
 
-    toml_data = get_pyproject_toml_metadata(packagename, version)
-
-    python_build_requires = toml_data['build-system']['requires']
-    fedora_build_requires = toml_data['build-system']['requires-fedora']
-
     all_package_files = get_installed_files(packagename)
     files = filter_files(packagename, all_package_files)
 
     result = template.render(pypi=pypi_data,
                              source_url=source_url,
-                             python_build_requires=python_build_requires,
-                             fedora_build_requires=fedora_build_requires,
                              files=files)
 
     with open('{}.spec'.format(packagename), 'w') as spec_file:

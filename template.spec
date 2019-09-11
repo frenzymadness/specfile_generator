@@ -12,15 +12,6 @@ Source0:        {{ source_url }}
 # Auto Python dependency
 BuildRequires:  python3-devel
 
-# Non-Python deps
-{% for package in fedora_build_requires -%}
-BuildRequires:  {{ package }}
-{% endfor %}
-
-# Python deps
-{% for package in python_build_requires -%}
-BuildRequires:  python3dist({{ package|lower }})
-{% endfor %}
 
 # Automatic runtime dependency generator
 %?python_enable_dependency_generator
