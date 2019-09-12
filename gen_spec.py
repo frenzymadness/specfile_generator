@@ -1,11 +1,10 @@
+import sys
+from subprocess import call, check_output
+from tempfile import TemporaryDirectory
+
 import os
 import re
 import requests
-import sys
-from tempfile import TemporaryDirectory
-from subprocess import call, check_output
-
-
 from jinja2 import Template
 
 
@@ -93,5 +92,5 @@ def main():
             generate_specfile(packagename)
 
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
