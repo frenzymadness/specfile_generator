@@ -1,10 +1,10 @@
-import requests
 import sys
-from tempfile import TemporaryDirectory
 from subprocess import call, check_output
+from tempfile import TemporaryDirectory
 
-from jinja2 import Template
+import requests
 import toml
+from jinja2 import Template
 
 
 def get_installed_files(packagename):
