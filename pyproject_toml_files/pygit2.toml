@@ -1,3 +1,0 @@
-[build-system]
-requires = ["cffi", "setuptools", "six"]
-requires-fedora = ['libgit2-devel', 'openssl-devel']
