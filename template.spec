@@ -8,6 +8,10 @@ Summary:        {{ pypi['info']['summary']}}
 License:        {{ pypi['info']['license']}}
 URL:            {{ pypi['info']['Home-page'] }}
 Source0:        {{ (pypi['info']['download_url'] or source_url) }}
+
+BuildArch:      noarch
+BuildRequires:  pyproject-rpm-macros
+
 %description
 {{pypi['info']['description']}}
 
@@ -24,14 +28,17 @@ BuildRequires:  python3-devel
 %prep
 %autosetup -n %{pkgname}-%{version}
 
+%generate_buildrequires
+%pyproject_buildrequires -t
+
 %build
-%py3_build
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
 
 # %check
-# %{__python3} setup.py test
+# %tox
 
 %files
 %{python3_sitearch}/%{pkgname}-%{version}-py%{python3_version}.egg-info
