@@ -9,6 +9,21 @@ import requests
 from jinja2 import Template
 
 
+def python3_macros():
+    macros = {
+    '%{python3_sitelib}': '',
+    '%{python3_sitearch}': '',
+    '%{_bindir}'
+    '%{python3_version}': '',
+    '%{python3_version_nodots}': ''}
+    
+    for key, value in macros.items():
+        expanded = check_output(['rpm', '--eval', key])
+        macros[key] = (expanded.decode()).strip()
+    return macros
+print(python3_macros())
+
+
 def prepare_venv(packagename):
     tempvenv = TemporaryDirectory()
     atexit.register(tempvenv.cleanup)
@@ -20,6 +35,8 @@ def prepare_venv(packagename):
 
 
 def get_installed_files(packagename, venv_pip, temp_dir):
+    # todo: check how rpm behaves when having
+    # f'{prefix}/../../../bin/something'
     result = check_output(venv_pip + ['show', '-f', packagename])
     result = (result.decode()).split('\n')
     for line in result:
@@ -32,9 +49,6 @@ def get_installed_files(packagename, venv_pip, temp_dir):
              if line.startswith('  ')]
     return files
 
-
-pip, tempdir = prepare_venv('requests')
-get_installed_files('requests', pip, tempdir)
 
 def filter_files(packagename, files):
     files_list_final = []
@@ -50,24 +64,6 @@ def filter_files(packagename, files):
         files_list_final.append('%{python3_sitearch}/' + file)
 
     return files_list_final
-
-
-def get_license(packagename, venv_pip):
-    # fails when package has only tar ball available on pypi
-    # e.g. hypotesis-fspaths
-
-    result = check_output(venv_pip + ['show', '-f', packagename])
-    result = result.decode()
-
-    for line in result.split('\n'):
-        found_at = line.find('Location: ')
-        if found_at == 0:
-            path = line[len('Location: '):] + '/'
-
-            for file_dir in os.listdir(path):
-                if file_dir.startswith(packagename) and (file_dir.find('dist-info') != -1):
-                    path_to_license = path + file_dir + '/LICENSE'
-                    return os.path.relpath(path_to_license, start=path)
 
 
 def get_pypi_metadata(packagename):
@@ -93,12 +89,9 @@ def generate_specfile(packagename):
     all_package_files = get_installed_files(packagename, venv_pip, temp_dir)
     # files = filter_files(packagename, all_package_files)
     files = all_package_files
-    license_path = get_license(packagename, venv_pip)
-
     result = template.render(pypi=pypi_data,
                              source_url=source_url,
-                             files=files,
-                             license_path=license_path)
+                             files=files)
 
     with open('{}.spec'.format(packagename), 'w') as spec_file:
         spec_file.write(result)
