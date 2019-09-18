@@ -9,11 +9,11 @@ import requests
 from jinja2 import Template
 
 
-def python3_macros():
+def path_macros():
     macros = {
     '%{python3_sitelib}': '',
     '%{python3_sitearch}': '',
-    '%{_bindir}'
+    '%{_bindir}': '',
     '%{python3_version}': '',
     '%{python3_version_nodots}': ''}
     
@@ -21,7 +21,16 @@ def python3_macros():
         expanded = check_output(['rpm', '--eval', key])
         macros[key] = (expanded.decode()).strip()
     return macros
-print(python3_macros())
+
+
+def files_with_macros(files):
+    macros = path_macros()
+    result = []
+    for file in files:
+        for macro, value in macros.items():
+            file = file.replace(value, macro)
+        result.append(file)
+    return result
 
 
 def prepare_venv(packagename):
@@ -45,7 +54,8 @@ def get_installed_files(packagename, venv_pip, temp_dir):
             prefix =  '/' + line.replace(temp_dir, 'usr') + '/'
             break
     
-    files = [prefix + line.strip() for line in result
+    files = [os.path.abspath(prefix + line.strip()) 
+             for line in result
              if line.startswith('  ')]
     return files
 
@@ -87,8 +97,8 @@ def generate_specfile(packagename):
     venv_pip, temp_dir = prepare_venv(packagename)
 
     all_package_files = get_installed_files(packagename, venv_pip, temp_dir)
-    # files = filter_files(packagename, all_package_files)
-    files = all_package_files
+    #files = filter_files(packagename, all_package_files)
+    files = files_with_macros(all_package_files)
     result = template.render(pypi=pypi_data,
                              source_url=source_url,
                              files=files)
