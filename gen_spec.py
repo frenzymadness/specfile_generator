@@ -7,6 +7,8 @@ import os
 import requests
 from jinja2 import Template
 
+template_path = os.path.dirname(os.path.abspath(__file__)) + '/template.spec'
+
 
 def get_installed_files(packagename, venv_pip, temp_dir):
     """return list of files looking like installed in system"""
@@ -80,7 +82,7 @@ def get_pypi_metadata(packagename):
 
 
 def generate_specfile(packagename):
-    with open('template.spec') as template_file:
+    with open(template_path) as template_file:
         template = Template(template_file.read())
 
     pypi_data = get_pypi_metadata(packagename)
