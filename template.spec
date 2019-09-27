@@ -40,11 +40,8 @@ BuildRequires:  python3-devel
 # %%tox
 
 %files
-%{python3_sitearch}/%{pkgname}-%{version}-py%{python3_version}.egg-info
-%{python3_sitearch}/%{pkgname}
-# todo: missing __pycache__
-{% for file in files %}
-{{ file }}
+%files -n python3-%{pkgname}
+{% for file in files %}{{ file }}
 {% endfor %}
 
 # todo: missing %license (get from manifest.in maybe)
