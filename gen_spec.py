@@ -9,10 +9,19 @@ from jinja2 import Template
 
 
 def get_installed_files(packagename, venv_pip, temp_dir):
+    """return list of files looking like installed in system"""
     result = check_output(venv_pip + ['show', '-f', packagename])
+    result = (result.decode()).split('\n')
 
-    files = [str(line.strip(), 'utf-8') for line in result.split(b'\n')
-             if line.startswith(b'  ')]
+    for line in result:
+        # this line contains path to venv directory
+        if line.startswith('Location:'):
+            line = line[len('Location: '):]
+            prefix = '/' + line.replace(temp_dir, 'usr') + '/'
+            break
+    files = [os.path.abspath(prefix + line.strip())
+             for line in result
+             if line.startswith('  ')]
     return files
 
 
@@ -60,7 +69,9 @@ def generate_specfile(packagename):
             source_url = source['url']
             break
 
-    all_package_files = get_installed_files(packagename)
+    venv_pip, temp_dir = prepare_venv(packagename)
+
+    all_package_files = get_installed_files(packagename, venv_pip, temp_dir)
     files = filter_files(packagename, all_package_files)
 
     result = template.render(pypi=pypi_data,
