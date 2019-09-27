@@ -35,6 +35,28 @@ def prepare_venv(packagename):
     return venv_pip, tempdir
 
 
+def path_macros():
+    macros = {
+        '%{python3_sitelib}': '',
+        '%{python3_sitearch}': '',
+        '%{_bindir}': '',
+        '%{python3_version}': '',
+        '%{python3_version_nodots}': ''}
+
+    for key in macros.keys():
+        expanded = check_output(['rpm', '--eval', key])
+        macros[key] = (expanded.decode()).strip() 
+    return macros
+
+
+def files_with_macros(files, macros):
+    # files should be sorted
+    files = '\n'.join(files)
+    for macro, value in macros.items():
+        files = files.replace(value, macro)
+    return files.split('\n')
+
+
 def filter_files(packagename, files):
     files_list_final = []
     for file in files:
@@ -71,8 +93,9 @@ def generate_specfile(packagename):
 
     venv_pip, temp_dir = prepare_venv(packagename)
 
+    macros = path_macros()
     all_package_files = get_installed_files(packagename, venv_pip, temp_dir)
-    files = filter_files(packagename, all_package_files)
+    files = files_with_macros(all_package_files, macros)
 
     result = template.render(pypi=pypi_data,
                              source_url=source_url,
