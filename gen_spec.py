@@ -1,20 +1,29 @@
+import atexit
 import sys
 from subprocess import call, check_output
 from tempfile import TemporaryDirectory
+import os
 
 import requests
 from jinja2 import Template
 
-def get_installed_files(packagename):
-    with TemporaryDirectory() as tempvenv:
-        call(['python3', '-m', 'venv', tempvenv])
-        venv_pip = [tempvenv + '/bin/python', '-m', 'pip']
-        call(venv_pip + ['install', packagename])
-        result = check_output(venv_pip + ['show', '-f', packagename])
+
+def get_installed_files(packagename, venv_pip, temp_dir):
+    result = check_output(venv_pip + ['show', '-f', packagename])
 
     files = [str(line.strip(), 'utf-8') for line in result.split(b'\n')
              if line.startswith(b'  ')]
     return files
+
+
+def prepare_venv(packagename):
+    tempdir = TemporaryDirectory()
+    atexit.register(tempdir.cleanup)
+    tempdir = tempdir.__enter__()
+    call(['python3', '-m', 'venv', tempdir])
+    venv_pip = [tempdir + '/bin/python', '-m', 'pip']
+    call(venv_pip + ['install', packagename])
+    return venv_pip, tempdir
 
 
 def filter_files(packagename, files):
