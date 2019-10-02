@@ -14,16 +14,18 @@ def get_installed_files(packagename, venv_pip, temp_dir):
     """return list of files looking like installed in system"""
     result = check_output(venv_pip + ['show', '-f', packagename])
     result = (result.decode()).split('\n')
+    files = []
 
     for line in result:
         # this line contains path to venv directory
         if line.startswith('Location:'):
             line = line[len('Location: '):]
             prefix = '/' + line.replace(temp_dir, 'usr') + '/'
-            break
-    files = [os.path.abspath(prefix + line.strip())
-             for line in result
-             if line.startswith('  ')]
+        if line.startswith(' '*2):
+            path = os.path.abspath(prefix + line.strip())
+            if os.path.isdir(path):
+                path += "/"
+            files.append(path)
     return files
 
 
@@ -57,6 +59,35 @@ def files_with_macros(files, macros):
     for macro, value in macros.items():
         files = files.replace(value, macro)
     return files.split('\n')
+
+
+# shouldn't work when library contains multiple modules
+def group_files(files):
+    exclude_paths = []
+    grouped_files = []
+    for file in files:
+        # Do not add files in exluded (already processed) folders
+        if any(True for path in exclude_paths if file.startswith(path)):
+            continue
+        # Add folder as is
+        if file.endswith("/"):
+            grouped_files.append(file)
+            continue
+        # Special case for __pycache__ directories in root directories
+        first, second, *rest = file.split("/")
+        if first.startswith("%") and second == "__pycache__":
+            grouped_files.append(f"{first}/{second}/*")
+            continue
+        # Add a whole folder instead of each file
+        if rest:
+            dirname = os.path.dirname(file)
+            exclude_paths.append(dirname)
+            grouped_files.append(dirname + "/")
+            continue
+        # Ad iff nothing else was added
+        grouped_files.append(file)
+
+    return grouped_files
 
 
 def filter_files(packagename, files):
@@ -98,7 +129,7 @@ def generate_specfile(packagename):
     macros = path_macros()
     all_package_files = get_installed_files(packagename, venv_pip, temp_dir)
     files = files_with_macros(all_package_files, macros)
-
+    files = group_files(files)
     result = template.render(pypi=pypi_data,
                              source_url=source_url,
                              files=files)
