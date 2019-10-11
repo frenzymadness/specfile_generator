@@ -1,3 +1,4 @@
+import argparse
 import atexit
 import sys
 from subprocess import call, check_output
@@ -112,12 +113,12 @@ def get_pypi_metadata(packagename):
     return response.json()
 
 
-def generate_specfile(packagename):
+def generate_specfile(packagename, version):
     with open(template_path) as template_file:
         template = Template(template_file.read())
 
     pypi_data = get_pypi_metadata(packagename)
-    version = pypi_data['info']['version']
+    version = (version or pypi_data['info']['version'])
     release = pypi_data['releases'][version]
     for source in release:
         if source['python_version'] == 'source':
@@ -132,19 +133,20 @@ def generate_specfile(packagename):
     files = group_files(files)
     result = template.render(pypi=pypi_data,
                              source_url=source_url,
-                             files=files)
+                             files=files,
+                             version=version)
 
     with open('{}.spec'.format(packagename), 'w') as spec_file:
         spec_file.write(result)
 
 
 def main():
-    if len(sys.argv) < 2:
-        print('Package name(s) not provided!')
-        sys.exit(1)
-    else:
-        for packagename in sys.argv[1:]:
-            generate_specfile(packagename)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('package', help='name of package stored in pypi')
+    parser.add_argument('--version', help='version of package, default is the newest version')
+    args = parser.parse_args()
+
+    generate_specfile(args.package, args.version)
 
 
 if __name__ == '__main__':

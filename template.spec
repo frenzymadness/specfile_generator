@@ -1,7 +1,7 @@
 %global pkgname {{ pypi['info']['name'] }}
 
 Name:           python-%{pkgname}
-Version:        {{ pypi['info']['version'] }}
+Version:        {{ version }}
 Release:        1%{?dist}
 Summary:        {{ pypi['info']['summary']}}
 # todo: check if the license match with rpm list of licences
