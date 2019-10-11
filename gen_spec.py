@@ -113,7 +113,7 @@ def get_pypi_metadata(packagename):
     return response.json()
 
 
-def generate_specfile(packagename, version):
+def generate_specfile(packagename, version, debug):
     with open(template_path) as template_file:
         template = Template(template_file.read())
 
@@ -131,6 +131,9 @@ def generate_specfile(packagename, version):
     all_package_files = get_installed_files(packagename, venv_pip, temp_dir)
     files = files_with_macros(all_package_files, macros)
     files = group_files(files)
+    if debug:
+        files += ['#' + files for files in all_package_files]
+        print(files)
     result = template.render(pypi=pypi_data,
                              source_url=source_url,
                              files=files,
@@ -144,9 +147,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('package', help='name of package stored in pypi')
     parser.add_argument('--version', help='version of package, default is the newest version')
+    parser.add_argument('--debug', help='specfile will contain more information', action='store_true')
     args = parser.parse_args()
-
-    generate_specfile(args.package, args.version)
+    print(args.debug)
+    generate_specfile(args.package, args.version, args.debug)
 
 
 if __name__ == '__main__':
