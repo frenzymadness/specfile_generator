@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-python3 gen_spec.py $1
+python3 -m pip install .
+python3 -m gen_spec $1
 cp $1.spec /root/rpmbuild/SPECS
 cd /root/rpmbuild/SOURCES
 spectool -g /root/rpmbuild/SPECS/*

@@ -15,7 +15,7 @@ In Fedora, all dependencies can be installed via dnf: `sudo dnf install python3-
 
 ## usage
 ~~~~
-usage: gen_spec.py [-h] [--version VERSION] [--debug] package
+usage: gen_spec [-h] [--version VERSION] [--debug] package
 
 positional arguments:
   package            name of package stored in pypi
@@ -31,7 +31,7 @@ optional arguments:
 ### Generate specfile
 
 ```
-$ python3 gen_spec.py requests
+$ python3 gen_spec requests
 ```
 ~~~
 $ cat requests.spec

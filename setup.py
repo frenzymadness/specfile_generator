@@ -3,6 +3,8 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+print(setuptools.find_packages())
+
 setuptools.setup(
     name="specfile_generator",
     version="0.0.0-dev",
@@ -18,6 +20,9 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     zip_safe=True,
-    license_files="LICENSE"
+    license_files="LICENSE",
+    package_data={
+            'gen_spec': ['*spec'],
+        }
 )
 
