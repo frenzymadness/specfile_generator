@@ -1,0 +1,12 @@
+services:
+  - docker
+language: python
+python:
+  - "3.7"
+install:
+  - pip install requests jinja2
+# command to run tests
+script:
+  - docker build . -t myimage
+  - packages=$(cat test_packages)
+  - for i in $packages; do docker run myimage sh buildscript.sh $i; done
