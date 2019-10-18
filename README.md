@@ -13,17 +13,27 @@ In order to run the specfile generator, you will need this dependencies installe
 
 In Fedora, all dependencies can be installed via dnf: `sudo dnf install python3-jinja2 python3-requests`. Or you can install dependencies via pip into virtual environment.
 
-## Example usage
+## usage
+~~~~
+usage: gen_spec.py [-h] [--version VERSION] [--debug] package
 
-Generator can generate RPM specfile from `template.spec` with information from PyPI.
+positional arguments:
+  package            name of package stored in pypi
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --version VERSION  version of package, default is the newest version
+  --debug            specfile will contain more information,
+                     for now it writes to spec list of all files gotten from virtual environment
+                
+~~~~
 
 ### Generate specfile
 
 ```
 $ python3 gen_spec.py requests
 ```
-
-~~~~
+~~~
 $ cat requests.spec
 
 %global pkgname requests
@@ -297,8 +307,13 @@ How to Contribute
 %changelog
 * Tue Feb 27 2018 Lumír Balhar <lbalhar@redhat.com> - 2.22.0-1
 - Some changelog entry
-~~~~
+~~~
 
 ### Build source and binary RPM
 [rpm guide](https://fedoraproject.org/wiki/How_to_create_a_GNU_Hello_RPM_package)  
 [simpler Fedora specific guide](https://docs.fedoraproject.org/en-US/quick-docs/creating-rpm-packages/)
+
+### What do we do
+
+For now we get information from pypi. Then install package to virtual environment to get list of files and we
+merge them. The preparation of build dependencies is handled by [Fedora macros](https://src.fedoraproject.org/rpms/pyproject-rpm-macros).
