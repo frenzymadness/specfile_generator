@@ -48,5 +48,5 @@ Summary: %{summary}
 # todo: missing %doc (not that important)
 
 %changelog
-* Tue Feb 27 2018 Lumír Balhar <lbalhar@redhat.com> - 0.26.3-1
+* {{changelog_head}} - {{ version }}-1
 - Some changelog entry

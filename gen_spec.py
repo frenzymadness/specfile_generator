@@ -1,7 +1,8 @@
 import argparse
 import atexit
+from datetime import date
 import sys
-from subprocess import call, check_output
+from subprocess import call, check_output, CalledProcessError
 from tempfile import TemporaryDirectory
 import os
 
@@ -113,7 +114,23 @@ def get_pypi_metadata(packagename):
     return response.json()
 
 
-def generate_specfile(packagename, version, debug):
+def changelog_head(email, name):
+    """ :returns f'{date} {name} <{email}>'"""
+    today = (date.today()).strftime('%a %b %d %Y')
+
+    if email or name:
+        return f'{today} {name} <{email}>'
+
+    try:
+        result = check_output(['rpmdev-packager'])
+        result = result.decode().strip()
+    except CalledProcessError:
+        result = " <>"
+
+    return f'{today} {result}'
+
+
+def generate_specfile(packagename, version, debug, email, name):
     with open(template_path) as template_file:
         template = Template(template_file.read())
 
@@ -133,10 +150,12 @@ def generate_specfile(packagename, version, debug):
     files = group_files(files)
     if debug:
         files += ['#' + files for files in all_package_files]
+
     result = template.render(pypi=pypi_data,
                              source_url=source_url,
                              files=files,
-                             version=version)
+                             version=version,
+                             changelog_head=changelog_head(email, name))
 
     with open('{}.spec'.format(packagename), 'w') as spec_file:
         spec_file.write(result)
@@ -147,8 +166,10 @@ def main():
     parser.add_argument('package', help='name of package stored in pypi')
     parser.add_argument('--version', help='version of package, default is the newest version')
     parser.add_argument('--debug', help='specfile will contain more information', action='store_true')
+    parser.add_argument('--email', help='changelog will contain this email')
+    parser.add_argument('--name', help='changelog will contain this name')
     args = parser.parse_args()
-    generate_specfile(args.package, args.version, args.debug)
+    generate_specfile(args.package, args.version, args.debug, args.email, args.name)
 
 
 if __name__ == '__main__':
