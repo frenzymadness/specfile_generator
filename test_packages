@@ -1,2 +1,9 @@
 requests
 pytest
+numpy
+hypothesis
+django
+wheel
+tomlkit
+pyyaml
+pygame
