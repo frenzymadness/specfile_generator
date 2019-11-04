@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "Generating specfile"
-python3 gen_spec.py $1 --debug
+python3 gen_spec.py --debug $1
 cp $1.spec /root/rpmbuild/SPECS
 cd /root/rpmbuild/
 

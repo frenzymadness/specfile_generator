@@ -1,2 +1,6 @@
 requests
 pytest
+tox
+wheel
+six
+jedi
