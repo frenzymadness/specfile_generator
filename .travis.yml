@@ -7,4 +7,10 @@ python:
 script:
   - docker build . -t myimage
   - packages=$(cat test_packages)
-  - for i in $packages; do docker run myimage sh buildscript.sh $i; done
+  - failed=""
+  - error=0
+  - for i in $packages; do   docker run myimage sh buildscript.sh $i;   if [ "$?" -ne 0 ];   then error=1;   failed="$failed $i,";   fi; done
+  - echo "failed packages $failed"
+  - exit $error
+
+
