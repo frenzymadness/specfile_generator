@@ -1,4 +1,7 @@
 # specfile_generator
+
+**This project is now archived. Its successor is available at https://github.com/befeleme/pyp2spec**
+
 This project is about generating specfile through metadata we can get from pypi api,
 or later with source distribution.
 
